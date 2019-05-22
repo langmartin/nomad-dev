@@ -1,0 +1,6 @@
+#!/bin/sh
+set -ex
+
+killall nomad
+# rm /tmp/nomad-*.log
+rm -r /tmp/client? /tmp/server?

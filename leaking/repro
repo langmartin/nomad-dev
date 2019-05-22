@@ -1,0 +1,33 @@
+#!/bin/sh
+killall nomad sleep
+mkdir -p tmp; rm -rf tmp/*
+
+run_nomad () {
+    nomad agent -server -config=server1.hcl > tmp/server1.log 2>&1 &
+    nomad agent -client -config=client1.hcl > tmp/client1.log 2>&1 &
+}
+
+run_nomad
+sleep 5
+nomad job run raw.nomad
+
+await_job () {
+    # number of expected jobs + 1
+    while [ `nomad job status raw.nomad|grep -c running` -lt 2 ]; do
+	sleep 1
+    done
+}
+
+set -x
+
+await_job
+# just kill, leave the state intact
+killall nomad
+run_nomad
+await_job
+
+# nomad job stop raw.nomad
+
+# if [ `ps ax|grep -c "sleep 3000000"` -gt 1 ]; then
+#     echo tasks leaking
+# fi
