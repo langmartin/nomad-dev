@@ -4,9 +4,9 @@ job "token-job.nomad" {
   group "example" {
     task "server" {
       vault {
-	policies = ["nomad-server"]
+	policies = ["nomad-cluster"]
 	change_mode   = "signal"
-	change_signal = "SIGUSR1"
+	change_signal = "SIGSTOP"
       }
 
       driver = "raw_exec"
