@@ -5,15 +5,15 @@ job "token-job.nomad" {
     task "server" {
       vault {
 	policies = ["nomad-cluster"]
-	change_mode   = "signal"
-	change_signal = "SIGSTOP"
+	change_mode   = "restart"
+	env = true
       }
 
       driver = "raw_exec"
 
       config {
-	command = "/bin/sleep"
-	args = ["3000000"]
+	command = "/bin/sh"
+	args = ["-c", "echo $VAULT_TOKEN >> /tmp/tokens.log; sleep 314159"]
       }
 
       resources {
