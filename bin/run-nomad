@@ -1,0 +1,12 @@
+#!/bin/sh
+set -ex
+
+for x in server*; do
+    [ -e "$x" ] || break
+    nomad agent -server -config="$x" > /tmp/nomad-$$-"${x%hcl}log" 2>&1 &
+done
+
+for x in client*; do
+    [ -e "$x" ] || break
+    nomad agent -client -config="$x" > /tmp/nomad-$$-"${x%hcl}log" 2>&1 &
+done
