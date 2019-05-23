@@ -1,8 +1,10 @@
-job "docs" {
+job "token-job.nomad" {
+  datacenters = ["dc1"]
+  
   group "example" {
     task "server" {
       vault {
-	policies = ["cdn", "frontend"]
+	policies = ["nomad-server"]
 	change_mode   = "signal"
 	change_signal = "SIGUSR1"
       }

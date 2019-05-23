@@ -18,9 +18,7 @@ server {
 vault {
   enabled          = true
   allow_unauthenticated = true
-  # ca_path          = "/etc/certs/ca"
-  # cert_file        = "/var/certs/vault.crt"
-  # key_file         = "/var/certs/vault.key"
-  address          = "http://vault.service.consul:8200"
+  address          = "http://127.0.0.1:8200"
   create_from_role = "nomad-cluster"
+  task_token_ttl   = "5m"
 }
