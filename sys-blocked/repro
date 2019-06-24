@@ -1,0 +1,33 @@
+#!/bin/sh
+
+function run_nomad () {
+    for x in server*; do
+	nomad agent -server -config="$x" > /tmp/"${x%hcl}log" 2>&1 &
+    done
+
+    for x in client*; do
+	nomad agent -client -config="$x" > /tmp/"${x%hcl}log" 2>&1 &
+    done
+}
+
+function await_job () {
+    while [ `nomad job status $1|grep -c running` -lt 2 ]; do
+	sleep 1
+    done
+}
+
+killall -9 nomad
+rm -rf /tmp/client? /tmp/server?
+killall sleep
+run_nomad; sleep 4
+
+set -x
+
+nomad job run block.hcl
+await_job block.hcl
+
+nomad job run system.hcl
+await_job system.hcl
+
+nomad job stop block.hcl; sleep 4
+nomad job status system.hcl
