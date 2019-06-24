@@ -9,6 +9,23 @@ data_dir = "/tmp/server1"
 # Give the agent a unique name. Defaults to hostname
 name = "server1"
 
+# ports {
+# 	http = 1234
+# 	rpc = 2345
+# 	serf = 3456
+# }
+addresses {
+	http = "127.0.0.1"
+	rpc = "127.0.0.1"
+	serf = "127.0.0.1"
+}
+advertise {
+	http = "127.0.0.1"
+	rpc = "127.0.0.1"
+	serf = "127.0.0.1"
+}
+
+
 # Enable the server
 server {
   enabled = true

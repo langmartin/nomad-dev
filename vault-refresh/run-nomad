@@ -2,4 +2,5 @@
 kill-nomad
 set -x
 export VAULT_TOKEN=`grep '^token\b' token.out |awk '{print $2}'`
+rm -f /tmp/tokens.log
 run-nomad
