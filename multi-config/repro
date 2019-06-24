@@ -1,0 +1,14 @@
+#!/bin/sh
+set -ex
+killall consul || true
+rm -rf /tmp/consul-dev
+consul agent -config-file ../consul/ssl.hcl  > /tmp/consul-dev.log 2>&1 &
+
+killall nomad || true
+rm -rf /tmp/nomad-dev
+# export CONSUL_HTTP_ADDR=127.0.0.1:8500
+nomad agent -client=True -config=cnf -config two.hcl -data-dir /tmp/nomad-dev
+
+
+
+
