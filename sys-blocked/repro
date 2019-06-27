@@ -19,7 +19,7 @@ function await_job () {
 killall -9 nomad
 rm -rf /tmp/client? /tmp/server?
 killall sleep
-run_nomad; sleep 4
+run_nomad; sleep 10
 
 set -x
 
@@ -27,7 +27,7 @@ nomad job run block.hcl
 await_job block.hcl
 
 nomad job run system.hcl
-await_job system.hcl
+await_job system.hcl; sleep 10
 
-nomad job stop block.hcl; sleep 4
+nomad job stop block.hcl; sleep 10
 nomad job status system.hcl

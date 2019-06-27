@@ -1,6 +1,9 @@
 #!/bin/sh
 set -ex
 
+nomad agent -dev >/tmp/nomad-dev.log 2>&1 &
+exit 0
+
 for x in server*; do
     [ -e "$x" ] || break
     nomad agent -server -config="$x" > /tmp/nomad-$$-"${x%hcl}log" 2>&1 &
