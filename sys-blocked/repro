@@ -27,7 +27,9 @@ nomad job run block.hcl
 await_job block.hcl
 
 nomad job run system.hcl
-await_job system.hcl; sleep 10
+await_job system.hcl; sleep 5
 
-nomad job stop block.hcl; sleep 10
+nomad job stop block.hcl; sleep 5
+
+nomad job run bump.hcl; sleep 2
 nomad job status system.hcl
