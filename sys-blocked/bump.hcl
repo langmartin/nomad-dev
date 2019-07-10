@@ -1,7 +1,7 @@
 job "bump.hcl" {
   datacenters = ["dc1"]
-  type = "service"
-  priority = 1
+  type = "system"
+  priority = 99
 
   group "all" {
     task "low" {
