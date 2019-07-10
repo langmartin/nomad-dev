@@ -1,0 +1,21 @@
+{
+	"data_dir": "/tmp/nomad-agent",
+	"datacenter": "dc1",
+	"client": {
+		"enabled":true,
+		"options": {
+			"driver.raw_exec.enable": "1",
+			"driver.exec": "1"
+		},
+		"memory_total_mb": 2000
+	},
+	"server": {
+		"enabled":true,
+		"bootstrap_expect": 1
+	},
+	"log_level": "DEBUG",
+	"telemetry": {
+		"collection_interval": "5m",
+		"disable_dispatched_job_summary_metrics": true
+	}
+}

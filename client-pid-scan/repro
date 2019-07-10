@@ -1,0 +1,16 @@
+#!/bin/sh
+
+killall nomad; sleep 6
+killall sleep
+rm -rf /tmp/nomad-agent /tmp/plugin*
+
+set -x
+
+(cd ~/go/src/github.com/hashicorp/nomad && go install)
+
+nomad agent -config agent.json > /tmp/nomad-dev.log 2>&1 &
+sleep 8
+
+for i in `seq 1`; do
+    nomad job run report.hcl
+done
