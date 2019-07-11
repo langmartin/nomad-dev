@@ -2,7 +2,7 @@ job "report.hcl" {
   datacenters = ["dc1"]
   type = "service"
   group "test" {
-    count = 10
+    count = 400
     ephemeral_disk {
       size = "101"
     }
@@ -15,10 +15,10 @@ job "report.hcl" {
       resources {
         memory = 10
         cpu    = 20
-        network {
-          mbits = 10
-          port "db" {}
-        }
+        # network {
+        #   mbits = 10
+        #   port "db" {}
+        # }
       }
     }
   }

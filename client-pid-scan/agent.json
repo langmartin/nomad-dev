@@ -6,8 +6,7 @@
 		"options": {
 			"driver.raw_exec.enable": "1",
 			"driver.exec": "1"
-		},
-		"memory_total_mb": 2000
+		}
 	},
 	"server": {
 		"enabled":true,
