@@ -1,0 +1,15 @@
+#!/bin/sh
+
+killall -9 nomad
+killall sleep
+
+rm -rf /tmp/nomad-agent /tmp/plugin* 
+
+set -x
+
+nomad agent -config agent.json > /tmp/nomad-dev.log 2>&1 &
+sleep 12
+
+nomad job run exec.hcl raw_exec.hcl docker.hcl
+
+echo "now run as root" 1>&2
