@@ -1,11 +1,8 @@
-job "raw_exec.hcl" {
+job "exec.hcl" {
   datacenters = ["dc1"]
   type = "service"
   group "test" {
     count = 2
-    ephemeral_disk {
-      size = "101"
-    }
     task "sleep" {
       driver = "exec"
       config {

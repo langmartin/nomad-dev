@@ -5,9 +5,9 @@ data_dir = "/tmp/nomad-agent"
 client {
   enabled = true
     options {
-      "driver.exec.enabled" = "true"
-      "driver.raw_exec.enabled" = "true"
-      "driver.docker.enabled" = "true"
+      "driver.exec.enable" = "1"
+      "driver.raw_exec.enable" = "1"
+      "driver.docker.enable" = "1"
     }
 }
 

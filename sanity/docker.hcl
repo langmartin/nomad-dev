@@ -1,4 +1,4 @@
-job "example" {
+job "docker.hcl" {
   datacenters = ["dc1"]
 
   group "cache" {
