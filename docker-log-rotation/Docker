@@ -1,0 +1,4 @@
+FROM alpine:3.10
+
+# 30mb of yes
+CMD ["/bin/sh", "-c", "yes|head -c31457280; sleep 3600"]

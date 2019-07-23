@@ -1,0 +1,23 @@
+#!/bin/sh
+
+docker build -t docker-log-rotation:0.1 -f Docker .
+
+killall -9 nomad
+killall sleep
+
+rm -rf /tmp/nomad-agent /tmp/plugin* 
+
+set -x
+
+nomad agent -config agent.hcl > /tmp/nomad-dev.log 2>&1 &
+sleep 12
+
+nomad job run docker.hcl
+
+sleep 4
+
+find /tmp/nomad-agent/alloc -name 'yes.stdout.*' -ls
+echo should be 2, 10mb or smaller
+docker inspect `docker ps -n1 -q` | jq '.[0].HostConfig.LogConfig'
+
+
