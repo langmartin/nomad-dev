@@ -1,0 +1,56 @@
+Nomad makes no exclusion garantees, but only promises to eventually
+run at least as many jobs as the user configured. A radical redesign
+of the system could:
+
+1. Compose allocations by small LWW register CRDTs, converging towards
+   a desired state
+
+2. Detail: probably just a logical lamport clock for partial ordering
+   of events, which is probably sufficient. schmichael's dependency on
+   external ids issue with snapshot sequences might be a case where
+   stronger dependency is requrired.
+
+3. Use gossip (maybe just global send if the server list is always
+   small) with anti-entropy to communicate changes. Especially at the
+   clients, tracking recovering writes allows us be confident in state
+   convergence.
+
+4. Use soft eventual mutual exclusion rather than the queue system to
+   preserve optimistic concurrency that avoids over-duplication of
+   scheduling work.
+
+5. Reserve raft for two cases:
+   1. elect a leader to serve stateless ui clients (all of them,
+      currently). Prevents the most frequent failure to read your own
+      writes (still possible around a leadership change)
+
+   2. Use the raft log to provide at most once job semantics,
+      necessary for things like db master rollover.
+
+This improves some things:
+
+1. The cluster can be configured to keep running without a quorum.
+   Raft can't accept writes with fewer voting members than the
+   configured quorum, nothing prevents two partitioned clusters with
+   conflicting configuration from forming. An eventual, gossip shaped
+   cluster can loosen this restriction for at least once jobs
+
+2. Client recovery is simplified, clients have multi-master write
+   access to their desired state, so actual state observations that
+   can only be made at the edge can be communicated back to the server.
+
+3. We can support at most once jobs without telling folks to get a
+   zookeeper. At most once jobs may become unwriteable if raft fails
+   to maintain a quorum, but only those jobs have to pause
+
+4. Cross datacenter operations are simplified
+
+5. The business rules of the system act by sending CRDT messages to
+   modify the state of the system. This makes the core of the system
+   functional and trivially setup for automatic testing. Side effects
+   in the system are reduced towards the lower limit of just the
+   system calls on the client.
+
+6. The difference between edge and level triggering is reduced, writes
+   are modeled by an event, and that event implies a change to the
+   state.
