@@ -1,6 +1,6 @@
 job "raw.nomad" {
   datacenters = ["dc1"]
-  type = "system"		# bug is only for system
+  type = "service"		# bug is only for system
 
   group "all" {
 
@@ -10,7 +10,10 @@ job "raw.nomad" {
     #   canary = 1
     # }
     
+      count = 2
+
     task "low" {
+
       driver = "raw_exec"
 
       config {
@@ -19,10 +22,10 @@ job "raw.nomad" {
       }
 
       # some but not all clients match the constraint
-      constraint {
-      	attribute = "${meta.tag}"
-      	value = "foo"
-      }
+      # constraint {
+      # 	attribute = "${meta.tag}"
+      # 	value = "foo"
+      # }
 
       # claim more resources than a client has available to trigger an error
       resources {

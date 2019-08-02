@@ -1,0 +1,25 @@
+#!/bin/sh
+kill-nomad
+killall sleep
+../bin/run-nomad
+sleep 10
+nomad job run raw.nomad
+
+function await_job () {
+    while [ `nomad job status "$1"|grep -c running` -lt 2 ]; do
+	sleep 1
+    done
+}    
+
+await_job raw.nomad
+# just kill, leave the state intact
+# killall nomad
+# ../bin/run-nomad clients
+# await_job raw.nomad
+
+# nomad job stop raw.nomad
+
+# # leaking isn't really a part of this bug
+# if [ `ps ax|grep -c "sleep 3000000"` -gt 1 ]; then
+#     echo tasks leaking
+# fi
