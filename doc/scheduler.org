@@ -1,0 +1,44 @@
+* Persistent Evals considered harmful
+
+I'd like to check my understanding: it seems like the core of the
+scheduler could be modeled more explicitly in terms of a database, and
+that actually a database without optimizations fits the use case best.
+
+| table | keys            | success condition                                       |
+|-------+-----------------+---------------------------------------------------------|
+| job   | .id             | `count allocs where job_id = .id` == .count             |
+| alloc | job.id, node.id | .running                                                |
+| node  | .id             | `count allocs where node.id = .id and status = pending` |
+
+Client status reporting should update alloc status, allowing us to
+notice unhealthy nodes or jobs.
+
+If a job changes to add a constraint, we can run the diff cycle to
+determine that we need to stop a series of allocs, and that some are
+missing.
+
+If a node goes missing, same.
+
+Edge triggering creates unpredictability; 2 nodes crashing causes a
+small recalculation, 60% causes a huge one. Level triggering pays the
+penalty continuously, collapsing average case performance and worst
+case.
+
+* Roadmap
+
+1. Index jobs by constraint, so they can be reselected arbitrarily
+
+2. Constraint change tree flags constraint index changes so re-mapping
+   can be scheduled
+
+3. System jobs for re-evaluation
+
+4. Make sure the queue is inspectable
+
+5. Build a property test / simulation over the data layer
+
+6. Collapse job types
+
+7. Support re-balancing in general
+
+8. Remove separate blocked eval
