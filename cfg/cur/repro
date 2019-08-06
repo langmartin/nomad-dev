@@ -1,5 +1,10 @@
 #!/bin/sh
 
+killall nomad
+sleep 6
+
+rm -rf /tmp/server1 /tmp/client1 /tmp/client2 /tmp/client3
+
 i=1
 for port in 7646 7647 7648; do
     name=client$i
@@ -8,11 +13,10 @@ log_level = "DEBUG"
 data_dir = "/tmp/$name"
 name = "$name"
 enable_debug = true
+datacenter = "dc1"
 client {
   enabled = true
-  server_join {
-    retry_join = ["127.0.0.1:4646"]
-  }
+  servers = ["127.0.0.1"]
 }
 
 plugin "raw_exec" {
@@ -28,12 +32,10 @@ EOF
     i=$((i + 1))
 done
 
-
-killall nomad
-nomad agent -dev >/tmp/server.log 2>&1 &
+nomad agent -config server1.hcl >/tmp/server1.log 2>&1 &
 for c in client*; do
     nomad agent -config $c >/tmp/${c%.hcl}.log 2>&1 &
 done
 
 sleep 6
-nomad job run example.nomad
+nomad job run job.hcl
