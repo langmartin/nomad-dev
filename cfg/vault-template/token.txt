@@ -1,0 +1,7 @@
+Key                Value
+---                -----
+token              9af376c3-0fe4-12f9-593f-77fa457d5a1f
+token_accessor     f98d0b24-0099-afe8-f5f9-914b81ae6bac
+token_duration     72h
+token_renewable    true
+token_policies     [default product_nomad_operator_policy]

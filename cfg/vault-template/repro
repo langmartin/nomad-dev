@@ -1,0 +1,22 @@
+#!/bin/sh
+sudo killall nomad vault; sleep 3
+
+vault server -dev > /tmp/vault.log 2>&1 &
+sleep 4
+
+export VAULT_ADDR=http://127.0.0.1:8200
+export VAULT_TOKEN=`cat ~/.vault-token`
+
+sh vault-script.sh
+
+sudo VAULT_TOKEN=$VAULT_TOKEN nomad agent -dev --vault-enabled --vault-address=${VAULT_ADDR} > /tmp/nomad.log 2>&1 &
+sleep 8
+
+# to check template rendering
+nomad job run example.nomad
+sleep 2
+
+set -x
+
+alloc=`nomad status example.nomad |tail -n1|cut -f1 -d' '`
+nomad alloc exec $alloc cat /local/file.yml; echo
