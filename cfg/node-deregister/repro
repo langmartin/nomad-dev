@@ -1,0 +1,9 @@
+#!/bin/sh
+
+killall nomad
+
+for i in server client1 client2; do
+    nomad agent -config $i.hcl > /tmp/$i.log 2>&1 &
+done
+
+sleep 4
