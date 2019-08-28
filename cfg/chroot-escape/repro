@@ -1,0 +1,9 @@
+#!/bin/sh
+nomad=nomad
+nomad=~/go/bin/nomad
+nomad=nomad-0.8.7
+
+make
+python -m SimpleHTTPServer > /tmp/server.log 2>&1 &
+sudo $nomad agent -dev > /tmp/nomad.log 2>&1 &
+echo $nomad job run job.hcl

@@ -1,0 +1,8 @@
+#!/bin/sh
+# nomad=nomad
+# nomad=nomad-0.8.7
+
+killall python
+sudo killall nomad nomad-0.8.7
+# mount|grep nomad|grep alloc|cut -f3 -d\ |xargs sudo umount
+# sudo rm -r /tmp/nomad*
