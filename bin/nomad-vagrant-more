@@ -1,0 +1,28 @@
+#!/bin/sh
+
+scp ~/.zshenv ~/.zshrc linux:
+
+cat <<EOF | ssh linux 'sh -s'
+sudo mkdir -p /Users
+sudo ln -sfn ../home/vagrant /Users/lang
+
+mkdir -p go/src/github.com code
+
+yes | sudo apt-get install zsh
+sudo chsh -s /bin/zsh vagrant
+echo 'export HOME=/Users/lang' >> ~/.zshenv
+EOF
+
+rsync="/usr/local/bin/rsync -a --delete"
+
+for src in hashicorp langmartin; do
+	$rsync ~/go/src/github.com/$src/ linux:go/src/github.com/$src/
+done
+
+for src in nomad-dev; do
+	$rsync ~/code/$src/ linux:code/$src/
+done
+
+# for src in cloud.google.com/go/storage; do
+#     rsync -avP ~/go/src/$src/ linux:go/src/$src/
+# done
