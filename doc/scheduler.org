@@ -25,20 +25,125 @@ penalty continuously, collapsing average case performance and worst
 case.
 
 * Roadmap
+** Background
+
+There are upcoming changes to the scheduler to support the CSI storage
+plugin system and to enable cross-region jobs. Both of those efforts
+are planned in stages.
+
+From the implementation standpoint, the important difference between
+the phases will mostly be the difference between the semantics of at
+least =n= running tasks vs. exclusive access to resources.
+
+** TODO CSI 0.11
+
+*** CSI MultiNodeReadOnly and MultiNodeReadWrite
+
+These two modes only require at least =n= consistency.
+
+1. Introduce new =CSIVolumes= configuration map at the top level
+   - =Name= Entry key or =Name= field
+   - =Mode=
+   - =Network= Are some volumes only reachable from some client nodes?
+   - =Driver=
+   - =Config= Driver specific configuration
+
+2. Add fields to reference a =Name= identifying a =CSIVolume= entry:
+   - =Job=
+   - =Allocation=
+   - =Eval=
+
+3. Add =Node= field to set of supported =Driver=
+
+4. Add constraints to match jobs to nodes w/ plugin, network
+   - feasible, scheduler
+
+5. Add hooks on allocation changes to update reference counting of
+   allocations, at least to support metrics. Are there some
+   multi-access plugins that require soft allocation limits?
+
+*** CSI SingleNodeReadWrite
+
+Requires exclusive access, so in addition to the constraints above:
+
+1. Dirty shutdown blockout period on the server
+2. Client disconnects if separated from the server to match blockout period
+3. Verify heartbeat failure dirty shutdown events
+
+*** Multi-region Active/Active
+
+Multi-region job deployment phase 1 only requires active/active jobs
+for high availability, with jobs running in all specified regions.
+
+1. Region membership by configuration file
+2. Should jobs be available to change in each cluster?
+3. Lamport logical clock + node id version field can support
+   multi-master job edits
+4. Anti-entropy mechanism for ensuring job transmission
+
+*** Multi-region Active/Failover
+
+1. Independent raft instance, running on the leader in each region
+   1. global raft log can contains just mappings of job to region leader
+
+We don't currently support failover inside a regional cluster (and
+could). This leaves some questions about the intent of multi-region
+failover. If the failover service produces data that could be subject
+to corruption in a multi-master scenario, it's necessary to use
+membership pessimistically:
+
+1. regional leader writes the =job:region= mapping to the global raft log
+2. if a region loses its connection to the global quorum, it must stop
+   the job running in its region
+3. if no region is connected to a quorum, the job must stop running
+
+In the case that there are 2 regions, we'll need to document the
+requirement to deploy empty regions just to maintain reasonable quorum
+membership rather than to actually run jobs.
+
+This failover mode implies supporting failover inside a regional
+cluster as well, which should be fine.
+
+** TODO Roadmap Later
 
 1. Index jobs by constraint, so they can be reselected arbitrarily
 
-2. Constraint change tree flags constraint index changes so re-mapping
-   can be scheduled
+2. Constraint change tree, which flags constraint index changes so
+   re-mapping can be scheduled
 
-3. System jobs for re-evaluation
+3. goroutine job for re-evaluation
 
 4. Make sure the queue is inspectable
 
-5. Build a property test / simulation over the data layer
+5. Surface / RFC the issue of consistency models
+   1. See if raft or our use of raft has a master of 1 bug
+   2. If remaining live is desirable, is there a cheap way to make
+      most datatypes eventually consistent
+   3. storage implies some at most once behavior, should those be
+      surfaced to clients as a feature? supporting e.g. postgres
+      master failover without an external zookeeper could be great
 
-6. Collapse job types
+6. Build a property test / simulation over the data layer
 
-7. Support re-balancing in general
+7. Collapse job types
 
-8. Remove separate blocked eval
+8. Support re-balancing in general
+
+9. Remove separate blocked eval
+
+** Comment
+
+#+BEGIN_QUOTE
+I just noticed an interesting caveat for volumes - In raw_exec tasks
+we actually don't attempt to do anything with mounts. For host volumes
+this is probably ok bc they can access the underlying path directly,
+and can still get teh scheduling benefits (cc @yishan), for storage
+plugins however, this might be a bit more problematic bc there won't
+necessarily be a stable host path. I'll add it as a question to RFCs,
+but would love any idas
+#+END_QUOTE
+
+* Code
+
+- [[file:~/go/src/github.com/hashicorp/nomad/nomad/worker.go::func%20(w%20*Worker)%20run()%20{][worker]]
+* Notes
