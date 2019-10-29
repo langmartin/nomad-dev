@@ -1,0 +1,3 @@
+* Scripts & Configs for working with Nomad
+
+- [[https://gist.github.com/spuder/93dc2f39b405499d1bd85b7dd717c4c4][raft leadership recovery]]
