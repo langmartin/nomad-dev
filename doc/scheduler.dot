@@ -1,0 +1,36 @@
+digraph {
+	// bgcolor="black"
+	// edge[color="white"]
+
+	// blue
+	node[style="filled" color="#5B4D8B" shape="circle" fontcolor="white"]
+	sr -> s
+	s -> t1
+	s -> t2
+	t2 -> sr
+
+	// purple
+	node[color="#661B57" shape="pentagon"]
+	sr -> q
+	q -> r1
+	q -> r2
+
+	// red
+	node[color="#AD2946" shape="house"]
+	sr -> x
+	x -> y1
+	x -> y2
+
+	// orange
+	node[color="#DB411F" shape="diamond"]
+	sr -> w
+	w -> v1
+	w -> v2
+
+
+	// yellow
+	node[color="#E78F28" shape="square"]
+	sr -> z
+	z -> a1
+	z -> sr
+}
