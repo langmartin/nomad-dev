@@ -1,6 +1,6 @@
 digraph {
 	// bgcolor="black"
-	// edge[color="white"]
+	edge[color="#aaaaaa"]
 
 	// blue
 	node[style="filled" color="#5B4D8B" shape="septagon" fontcolor="white"]
