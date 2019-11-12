@@ -3,29 +3,34 @@ digraph {
 	// edge[color="white"]
 
 	// blue
-	node[style="filled" color="#5B4D8B" shape="box" fontcolor="white"]
-	vol[label=<<table border="0" cellborder="1" cellspacing="1"><tr>
+	node[style="filled" color="#5B4D8B" shape="egg" fontcolor="white"]
+	// vol[shape="record" label="<id> VolumeID|<dr> Driver"]
+	vol[label=<<table title="Volume" border="0" cellborder="1" cellspacing="1"><tr>
 	       <td port="id">VolumeID</td>
 	       <td port="dr">Driver</td>
 	       </tr></table>>]
 
 	// purple
 	node[color="#661B57" shape="egg"]
-	alloc[label=<<table border="0" cellborder="1" cellspacing="1"><tr>
+	// alloc[shape="record" label="<id> AllocID|<vol> Volume"]
+	alloc[label=<<table title="Alloc" border="0" cellborder="1" cellspacing="1"><tr>
 	       <td port="id">AllocID</td>
 	       <td port="vol">Volume</td>
 	       </tr></table>>]
 
 	// red
-	node[color="#AD2946" shape="trapezium"]
-	// nnode[label="<id> NodeID|<dr> Driver|..."]
-	nnnode[label=<<table border="0" cellborder="1" cellspacing="1"><tr>
+	node[color="#AD2946" shape="house"]
+	// nnode[shape="record" label="<id> NodeID|<dr> Driver|..."]
+	nnode[label=<<table title="Node" border="0" cellborder="1" cellspacing="1"><tr>
 	       <td port="id">NodeID</td>
 	       <td port="dr">Driver</td>
 	       </tr></table>>]
 
-	alloc:vol -> vol:id
-	nnode:dr -> vol:dr
+	vol:id -> alloc:vol
+	vol:dr -> nnode:dr
+
+	// alloc:vol -> vol:id
+	// nnode:dr -> vol:dr
 
 	// orange
 	// node[color="#DB411F" shape="diamond"]
