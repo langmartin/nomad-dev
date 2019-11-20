@@ -1,0 +1,12 @@
+#!/bin/sh
+
+killall nomad && sleep 10
+
+export GOFLAGS='-tags=ent'
+
+go install || exit
+
+nomad agent -dev >/dev/null 2>&1&
+sleep 10
+cd ~/code/nomad-dev/cfg/quota	# this directory
+./post
