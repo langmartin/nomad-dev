@@ -1,7 +1,7 @@
 #!/bin/sh
-curl -vv -XPOST -d@data.json http://localhost:4646/v1/quota/one
+curl -vv -XPOST -d@data.hcl http://localhost:4646/v1/quota/one
 curl -vv -XPOST -d@data2.json http://localhost:4646/v1/quota/two
-curl http://localhost:4646/v1/quota/usage/one|jq .
-curl http://localhost:4646/v1/quota/usage/two|jq .
+# curl http://localhost:4646/v1/quota/usage/one|jq .
+# curl http://localhost:4646/v1/quota/usage/two|jq .
 # curl http://localhost:4646/v1/quota/two|jq .
-# nomad-ent-0101 quota inspect one
+nomad quota inspect one

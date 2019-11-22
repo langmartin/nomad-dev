@@ -6,7 +6,7 @@ export GOFLAGS='-tags=ent'
 
 go install || exit
 
-nomad agent -dev >/dev/null 2>&1&
+nomad agent -dev >/tmp/nomad.log 2>&1&
 sleep 10
 cd ~/code/nomad-dev/cfg/quota	# this directory
 ./post
