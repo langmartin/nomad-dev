@@ -1,9 +1,9 @@
 digraph {
 	// bgcolor="black"
-	edge[color="#aaaaaa"]
+	edge[color="#bbbbbb"]
 
 	// blue
-	node[style="filled" color="#5B4D8B" shape="septagon" fontcolor="white"]
+	node[style="filled" color="#5B4D8B" shape="box" fontcolor="white"]
 	// vol[shape="record" label="<id> VolumeID|<dr> Driver"]
 	vol[label=<<table border="0" cellborder="1" cellspacing="1">
 	    <tr><td colspan="3"><b>Volume</b></td></tr><tr>
@@ -13,7 +13,7 @@ digraph {
 	       </tr></table>>]
 
 	// purple
-	node[color="#661B57" shape="egg"]
+	node[color="#661B57" shape="box"]
 	// alloc[shape="record" label="<id> AllocID|<vol> Volume"]
 	alloc[label=<<table border="0" cellborder="1" cellspacing="1">
 	      <tr>
@@ -24,7 +24,7 @@ digraph {
 	      </table>>]
 
 	// red
-	node[color="#AD2946" shape="house"]
+	node[color="#AD2946" shape="box"]
 	// nnode[shape="record" label="<id> NodeID|<dr> Driver|..."]
 	nnode[label=<<table border="0" cellborder="1" cellspacing="1">
 	      <tr>

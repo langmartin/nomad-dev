@@ -38,7 +38,8 @@ least =n= running tasks vs. exclusive access to resources.
 ** TODO CSI 0.11
 
 - [[https://docs.google.com/document/d/13D2DzdcEN2oWG8RInDBv29qYq7ooU97I6tv_WU_Qalg/edit][meta rfc]]
-- https://github.com/hashicorp/nomad/pull/6622
+- [[https://github.com/hashicorp/nomad/pull/6622][my server]]
+- [[https://github.com/hashicorp/nomad/pull/6555][dani's client]]
 
 *** CSI MultiNodeReadOnly and MultiNodeReadWrite
 
