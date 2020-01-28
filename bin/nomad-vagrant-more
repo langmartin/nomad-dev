@@ -11,6 +11,14 @@ mkdir -p go/src/github.com code
 yes | sudo apt-get install zsh
 sudo chsh -s /bin/zsh vagrant
 echo 'export HOME=/Users/lang' >> ~/.zshenv
+
+wget https://dl.google.com/go/go1.13.6.linux-amd64.tar.gz
+sudo rm -r /usr/local/go
+sudo tar -C /usr/local -xzf go1.13.6.linux-amd64.tar.gz
+EOF
+
+cat <<EOF | ssh linux 'sh -s'
+GO111MODULE=on go get golang.org/x/tools/gopls@latest
 EOF
 
 rsync="/usr/local/bin/rsync -a --delete"
@@ -22,7 +30,3 @@ done
 for src in nomad-dev; do
 	$rsync ~/code/$src/ linux:code/$src/
 done
-
-# for src in cloud.google.com/go/storage; do
-#     rsync -avP ~/go/src/$src/ linux:go/src/$src/
-# done
