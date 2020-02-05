@@ -3,22 +3,29 @@
 scp ~/.zshenv ~/.zshrc linux:
 
 cat <<EOF | ssh linux 'sh -s'
-sudo mkdir -p /Users
-sudo ln -sfn ../home/vagrant /Users/lang
-
+sudo ln -sfn . /ssh:linux:
 mkdir -p go/src/github.com code
+
+mkdir -p bin
+touch bin/lsp-gopls
+chmod +x bin/lsp-gopls
 
 yes | sudo apt-get install zsh
 sudo chsh -s /bin/zsh vagrant
-echo 'export HOME=/Users/lang' >> ~/.zshenv
+echo 'export HOME=/ssh:linux:/home/vagrant' >> ~/.zshenv
 
 wget https://dl.google.com/go/go1.13.6.linux-amd64.tar.gz
 sudo rm -r /usr/local/go
 sudo tar -C /usr/local -xzf go1.13.6.linux-amd64.tar.gz
+
+GO111MODULE=on go get golang.org/x/tools/gopls@latest
 EOF
 
-cat <<EOF | ssh linux 'sh -s'
-GO111MODULE=on go get golang.org/x/tools/gopls@latest
+cat <<EOF | ssh -T linux 'cat >bin/lsp-gopls'
+#!/bin/sh
+export GOROOT=/usr/local/go
+export GOPATH=/home/vagrant/go
+exec $GOPATH/bin/gopls
 EOF
 
 rsync="/usr/local/bin/rsync -a --delete"
