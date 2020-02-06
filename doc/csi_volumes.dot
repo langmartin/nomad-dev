@@ -1,50 +1,58 @@
 digraph {
-	// bgcolor="black"
-	edge[color="#bbbbbb"]
+        // bgcolor="black"
+        edge[color="#bbbbbb"]
 
-	// blue
-	node[style="filled" color="#5B4D8B" shape="box" fontcolor="white"]
-	// vol[shape="record" label="<id> VolumeID|<dr> Driver"]
-	vol[label=<<table border="0" cellborder="1" cellspacing="1">
-	    <tr><td colspan="3"><b>Volume</b></td></tr><tr>
-	       <td port="id">VolumeID</td>
-	       <td port="dr">Driver</td>
-	       <td port="tp">Topology</td>
-	       </tr></table>>]
+        // blue
+        node[style="filled" color="#5B4D8B" shape="egg" fontcolor="white"]
+        vol[label=<<table border="0" cellborder="1" cellspacing="0" color="white">
+            <tr><td colspan="3"><b>Volume</b></td></tr>
+	    <tr>
+            <td port="id">VolumeID</td>
+            <td port="dr">Driver</td>
+            <td port="tp">Topology</td>
+            </tr>
+	    </table>>]
 
-	// purple
-	node[color="#661B57" shape="box"]
-	// alloc[shape="record" label="<id> AllocID|<vol> Volume"]
-	alloc[label=<<table border="0" cellborder="1" cellspacing="1">
+        // orange
+        node[color="#DB411F"]
+        volon[label=<<table>
+              <tr><td colspan="3"><b>Volume Availablity</b></td></tr>
 	      <tr>
-	       <td port="id">AllocID</td>
-	       <td port="vol">Volume</td>
-	      </tr>
-	      <tr><td colspan="2"><b>Allocation</b></td></tr>
+              <td port="vid">VolumeID</td>
+              <td port="nid">NodeID</td>
+              </tr>
 	      </table>>]
+        volon:vid -> vol
+        volon:nid -> nnode
 
-	// red
-	node[color="#AD2946" shape="box"]
-	// nnode[shape="record" label="<id> NodeID|<dr> Driver|..."]
-	nnode[label=<<table border="0" cellborder="1" cellspacing="1">
-	      <tr>
-	       <td port="id">NodeID</td>
-	       <td port="dr">Driver</td>
-	       <td port="tp">Topology</td>
-	      </tr>
-	      <tr><td colspan="3"><b>Node</b></td></tr>
-	      </table>>]
+        // purple
+        node[color="#661B57"]
+        alloc[label=<<table border="0" cellborder="1" cellspacing="1">
+              <tr><td colspan="2"><b>Allocation</b></td></tr>
+              <tr>
+              <td port="id">AllocID</td>
+              <td port="vol">Volume</td>
+              </tr>
+              </table>>]
 
-	vol:id -> alloc:vol
-	vol:dr -> nnode:dr
-	vol:tp -> nnode:tp
+        // red
+        node[color="#AD2946"]
+        nnode[label=<<table border="0" cellborder="1" cellspacing="1">
+              <tr><td colspan="3"><b>Node</b></td></tr>
+              <tr>
+              <td port="id">NodeID</td>
+              <td port="dr">Driver</td>
+              <td port="tp">Topology</td>
+              </tr>
+              </table>>]
 
-	// alloc:vol -> vol:id
-	// nnode:dr -> vol:dr
+        // vol:dr -> nnode:dr
+        // vol:tp -> nnode:tp
 
-	// orange
-	// node[color="#DB411F" shape="diamond"]
+        // alloc:vol -> vol:id
+        // nnode:dr -> vol:dr
 
-	// yellow
-	// node[color="#E78F28" shape="square"]
+
+        // yellow
+        // node[color="#E78F28" shape="square"]
 }
