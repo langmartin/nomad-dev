@@ -1,0 +1,72 @@
+#!/bin/bash
+set -x
+
+for n in 1; do
+    mkdir -p /tmp/server$n
+    port=4646
+    cat <<EOF > server1.cfg
+log_level = "DEBUG"
+data_dir = "/tmp/server$n"
+name = "server$n"
+server {
+  enabled = true
+  bootstrap_expect = 1
+}
+ports {
+  http = $port
+}
+EOF
+done
+
+for n in 1 2; do
+    mkdir -p /tmp/client$n
+    port=564$n
+    cat <<EOF > client$n.cfg
+log_level = "DEBUG"
+data_dir = "/tmp/client$n"
+name = "client$n"
+client {
+  enabled = true
+  server_join {
+    retry_join = ["127.0.0.1:4647"]
+  }
+  memory_total_mb = 30
+}
+
+plugin "raw_exec" {
+  config {
+    enabled = true
+  }
+}
+
+ports {
+  http = $port
+}
+EOF
+done
+
+function run_nomad () {
+    for x in server* client*; do
+	dir=/tmp/"${x%.cfg}"
+	mkdir -p "$dir"
+	"$nomad" agent -config="$x" > "$dir"/log 2>&1 &
+	echo $! > "$dir"/pid
+    done
+}
+
+function await_job () {
+    while [ `"$nomad" job status $1|grep -c running` -lt 2 ]; do
+	sleep 1
+    done
+}
+
+ps ax|grep 'nomad.* agent'|grep -v grep|awk '{print $1}'| while read pid; do
+    kill "$pid"
+done
+
+sleep 2
+rm -rf /tmp/client? /tmp/server?
+killall sleep
+run_nomad; sleep 10
+
+"$nomad" job run job.hcl

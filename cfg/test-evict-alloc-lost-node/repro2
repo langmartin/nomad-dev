@@ -1,0 +1,8 @@
+#!/bin/sh
+set -x
+
+"$nomad" job run high.hcl&
+kill -9 `cat /tmp/client1/pid`
+
+# "$nomad" job stop job.hcl
+# "$nomad" job status job.hcl
