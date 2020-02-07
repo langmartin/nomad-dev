@@ -14,9 +14,9 @@ yes | sudo apt-get install zsh
 sudo chsh -s /bin/zsh vagrant
 echo 'export HOME=/ssh:linux:/home/vagrant' >> ~/.zshenv
 
-wget https://dl.google.com/go/go1.13.6.linux-amd64.tar.gz
+wget https://dl.google.com/go/go1.13.7.linux-amd64.tar.gz
 sudo rm -r /usr/local/go
-sudo tar -C /usr/local -xzf go1.13.6.linux-amd64.tar.gz
+sudo tar -C /usr/local -xzf go1.13.7.linux-amd64.tar.gz
 
 GO111MODULE=on go get golang.org/x/tools/gopls@latest
 EOF
@@ -34,6 +34,8 @@ for src in hashicorp langmartin; do
 	$rsync ~/go/src/github.com/$src/ linux:go/src/github.com/$src/
 done
 
-for src in nomad-dev; do
+for src in dot-file nomad-dev; do
 	$rsync ~/code/$src/ linux:code/$src/
 done
+
+scp ~/.gitconfig linux:
