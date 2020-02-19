@@ -39,3 +39,5 @@ for src in dot-file nomad-dev; do
 done
 
 scp ~/.gitconfig linux:
+
+$rsync ~/.aws/ linux:.aws/
