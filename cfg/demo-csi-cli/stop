@@ -1,0 +1,8 @@
+#!/bin/sh
+ppid=`pgrep nomad|head -n1`
+
+if [ -n "$ppid" ]; then
+    gpid=`ps -o %r "$ppid"|tail -n1`
+
+sudo kill -TERM "-$gpid"
+sudo mv /tmp/nomad-csi /tmp/nomad-csi-`uuidgen`

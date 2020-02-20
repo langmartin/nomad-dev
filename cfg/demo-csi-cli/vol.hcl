@@ -1,0 +1,5 @@
+id = "e289c1ed-5429-11ea-999f-0242ac110002"
+namespace = "default"
+plugin_id = "plug"
+access_mode = "single-node-writer"
+attachment_mode = "file-system"
