@@ -4,7 +4,7 @@ job "use" {
   group "cache" {
     volume "test" {
       type   = "csi"
-      source = "<id from earlier>"
+      source = "<VOLUME_ID>"
     }
 
     task "redis" {

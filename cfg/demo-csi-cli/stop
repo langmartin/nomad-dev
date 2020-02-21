@@ -1,8 +1,8 @@
 #!/bin/sh
-ppid=`pgrep nomad|head -n1`
+ppid=`cat /tmp/nomad-csi/server1/pid`
 
 if [ -n "$ppid" ]; then
-    gpid=`ps -o %r "$ppid"|tail -n1`
-
-sudo kill -TERM "-$gpid"
-sudo mv /tmp/nomad-csi /tmp/nomad-csi-`uuidgen`
+    gpid=`ps -o %r "$ppid"|tail -n1|awk '{print $1}'`
+    sudo kill -TERM "-$gpid"
+    sudo mv /tmp/nomad-csi /tmp/nomad-csi-`uuidgen`
+fi
