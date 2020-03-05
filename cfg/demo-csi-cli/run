@@ -1,32 +1,18 @@
 #!/bin/sh
 set -e
 dir=/tmp/nomad-csi
-CSI_ENDPOINT="$dir/client1/client/csi/monolith/plug/csi.sock"
 nomad="$GOPATH"/bin/nomad
 
-run_nomad() {
-    which csc || \
-	GO111MODULE=off go get -u github.com/rexray/gocsi/csc
+which csc >/dev/null || \
+    GO111MODULE=off go get -u github.com/rexray/gocsi/csc
 
-    for a in server1 client1; do
-	mkdir -p $dir/$a
-	sudo $nomad agent -config $a.hcl > $dir/$a/log 2>&1 &
-	echo $! > $dir/$a/pid
-    done
+for a in server1 client1; do
+    mkdir -p $dir/$a
+    sudo $nomad agent -config $a.hcl > $dir/$a/log 2>&1 &
+    echo $! > $dir/$a/pid
+done
 
-    sleep 15
-}
+sleep 15
 
-# run_nomad
-# $nomad run plug.hcl || true
-# sleep 5
-
-vid=`sudo csc --endpoint $CSI_ENDPOINT controller create-volume test-volume --cap 1,2,ext4|awk '{print $1}'|sed 's/"//g'`
-
-sed "s/<VOLUME_ID>/$vid/g" vol.hcl > v.hcl
-sed "s/<VOLUME_ID>/$vid/g" use.hcl > u.hcl
-
+$nomad run plug.hcl || true
 sleep 10
-
-$nomad csi volume register v.hcl
-$nomad run u.hcl
