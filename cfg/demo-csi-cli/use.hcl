@@ -4,7 +4,11 @@ job "use" {
   group "cache" {
     volume "test" {
       type   = "csi"
-      source = "<VOLUME_ID>"
+      source = "foo"
+      mount_options {
+	fs_type = "ext4"
+	mount_flags = []
+      }
     }
 
     task "redis" {

@@ -11,5 +11,5 @@ sed "s/<VOLUME_ID>/$vid/g" use.hcl > u.hcl
 
 sleep 10
 
-$nomad volume register v.hcl
+$nomad volume register v.hcl || true
 $nomad run u.hcl
