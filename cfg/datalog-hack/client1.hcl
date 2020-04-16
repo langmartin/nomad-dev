@@ -12,7 +12,7 @@ client {
   servers = ["127.0.0.1:4647"]
 
   datalog = <<EOF
-capabilities(client1, time_travel).
+capabilities(client1, water_travel).
 EOF
 }
 
