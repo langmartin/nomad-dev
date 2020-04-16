@@ -1,0 +1,16 @@
+* Datalog as a Feature
+
+My hack week project drops a simple datalog implementation into Nomad
+as a feature providing operator extensibility to the scheduler.
+
+** Job Datalog
+
+** Node Datalog
+
+** Node Database Includes Job Assertions from Allocations
+
+** Feasibility Placements
+
+- Job and Node assertions are compiled into the same database
+- Job queries must return results
+- Node queries must return results
