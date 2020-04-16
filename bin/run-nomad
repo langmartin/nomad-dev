@@ -1,15 +1,18 @@
 #!/bin/sh
 set -ex
 
-nomad agent -dev >/tmp/nomad-dev.log 2>&1 &
-exit 0
-
 for x in server*; do
     [ -e "$x" ] || break
-    nomad agent -server -config="$x" > /tmp/nomad-$$-"${x%hcl}log" 2>&1 &
+    d="/tmp/nomad-${x%.hcl}"
+    mkdir -p "$d"
+    nomad agent -server -config="$x" > "$d/log" 2>&1 &
+    echo $! > "$d/pid"
 done
 
 for x in client*; do
     [ -e "$x" ] || break
-    nomad agent -client -config="$x" > /tmp/nomad-$$-"${x%hcl}log" 2>&1 &
+    d="/tmp/nomad-${x%.hcl}"
+    mkdir -p "$d"
+    nomad agent -client -config="$x" > "$d/log" 2>&1 &
+    echo $! > "$d/pid"
 done
