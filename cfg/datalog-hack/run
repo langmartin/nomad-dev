@@ -1,0 +1,4 @@
+#!/bin/sh
+../../bin/run-nomad
+sleep 10
+nomad job run job.nomad
