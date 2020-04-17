@@ -1,16 +1,107 @@
 * Datalog as a Feature
 
-My hack week project drops a simple datalog implementation into Nomad
+My hack week project embeds a simple datalog implementation into Nomad
 as a feature providing operator extensibility to the scheduler.
 
-** Job Datalog
+** What?
 
-** Node Datalog
+Datalog is a simple logic programming language, a terminating subset
+of Prolog. It's not Turing complete, but is still capable of
+expressing a wide range of query shaped programs, and supports
+recursive rules.
 
-** Node Database Includes Job Assertions from Allocations
+#+BEGIN_SRC prolog
+  %% charlie has two kids, alice and bob
+  parent(alice, charlie).
+  parent(bob, charlie).
 
-** Feasibility Placements
+  %% charlie has parents, dan and erin
+  parent(charlie, dan).
+  parent(charlie, erin).
 
-- Job and Node assertions are compiled into the same database
-- Job queries must return results
-- Node queries must return results
+  %% Capitalized words are variables
+
+  %% ancestor in one case (the base case) just means "parent"
+  ancestor(A, B) :- parent(A, B).
+
+  %% ancestor also matches the case where the parent of A is a new
+  %% person C, who has an ancestor B
+  ancestor(A, B) :-
+      parent(A, C),
+      ancestor(C, B).
+
+  %% we can query to discover if erin (grandmother) is an ancestor of alice
+  ancestor(alice, erin)?
+  %% prints
+  ancestor(alice, erin)
+
+  %% if we leave B in ancestor unconstrained, we'll get all possible
+  %% ancestor results for alice
+  ancestor(alice, X)?
+  %% prints
+  ancestor(alice, charlie)
+  ancestor(alice, dan)
+  ancestor(alice, erin)
+#+END_SRC
+
+** Why Use it for Extension?
+
+Datalog is unfamiliar, but it is very simple and relatively easy to
+learn. It's query orientation supports adding expressive capability to
+a program like the scheduler in very short (like two line)
+declarations, while allowing relatively complex queries to be built
+up.
+
+Datalog's Turing incompleteness has a couple of nice properties for a
+scheduler extension language:
+
+1. All datalog programs terminate, it's impossible to express an
+   infinite loop. A bad datalog script can cause some local mayhem
+   with jobs that have overlapping queries, but can't DOS the
+   scheduler.
+
+2. There are several well-known very efficient implementations of
+   datalog, taking advantage of indexing and memoization supported by
+   the simplified semantics of the language. In particular a typed
+   datalog implementation (avoiding =interface{}= and just falling
+   through to go types at parse time) can probably perform complex
+   constraint matching faster than hand-optimized code.
+
+** What Else is it Good For?
+
+So this section is speculative, but there's a long and storied
+tradition of database optimization out-performing hand written code.
+For a fairly salty take on this, see:
+https://15721.courses.cs.cmu.edu/spring2016/papers/whatgoesaround-stonebraker.pdf
+
+I think it's likely that as our model grows in overlapping feature
+complexity, a well-designed performance oriented datalog engine could
+perform the =Feasibility= part of scheduling more quickly than our
+code does now, and with a significantly lower development cost for
+adding new features. Here's how I'd proceed:
+
+1. Make (fork?) an efficient datalog implementation in Go based on
+   magic sets, and with typed values.
+
+   - This week's implementation suggests that we'd want the solver to
+     operate on a set of databases, so that we can keep separate job
+     and node databases and run queries in the union of those two
+     without copying facts between databases
+
+   - There are datalog variants that are time aware which would be
+     super interesting for Consul in an eventually consistent context,
+     so it might be worth it to make the effort overlap
+
+2. Collect all relevant job and node datalog bits and query the
+   datalog engine right here: [[https://github.com/hashicorp/nomad/blob/417f50f925b62a2bbe098a1d2a74059bcf40b247/scheduler/generic_sched.go#L429][readyNodesInDCs]] Putting the query before
+   we enter the stack allows the efficiency of the datalog
+   implementation to work
+
+3. Consider new features as we go along, several of them could be
+   implemented by transforming HCL configuration into datalog rules at
+   parse/load time and calling it a day
+
+4. Bypass some existing features that may be particularly well suited
+   to query expression and rewrite them as datalog rules for a
+   performance comparison. This could be picked off one at a time, and
+   only where supported by evidence of improvement
