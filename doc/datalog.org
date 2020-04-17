@@ -3,6 +3,8 @@
 My hack week project embeds a simple datalog implementation into Nomad
 as a feature providing operator extensibility to the scheduler.
 
+https://github.com/hashicorp/nomad/tree/f-datalog
+
 ** What?
 
 Datalog is a simple logic programming language, a terminating subset
