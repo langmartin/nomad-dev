@@ -1,13 +1,12 @@
-job "job.nomad" {
+job "blue" {
   datacenters = ["dc1"]
 
     datalog = <<EOF
-job_color(job.nomad, puce).
-capabilities(A, time_travel)?
+~job_color(A, red)?
 EOF
 
   group "all" {
-    count = 2
+    count = 3
     task "any" {
       driver = "raw_exec"
       config {

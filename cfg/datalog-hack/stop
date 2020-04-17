@@ -1,0 +1,4 @@
+#!/bin/sh
+pkill nomad
+sleep 1
+rm -r /tmp/nomad-*

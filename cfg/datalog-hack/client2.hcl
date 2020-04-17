@@ -13,7 +13,7 @@ client {
 
   datalog = <<EOF
 capabilities(client2, time_travel).
-job_color(A, vermillion)?
+job_color(A, red)?
 EOF
 }
 
