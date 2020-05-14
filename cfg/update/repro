@@ -1,9 +1,10 @@
 #!/bin/sh
 
-killall nomad
-sleep 6
-
+pkill nomad
+sleep 3
 rm -rf /tmp/server1 /tmp/client1 /tmp/client2 /tmp/client3
+
+nomad=nomad-0.11.1
 
 i=1
 for port in 7646 7647 7648; do
@@ -32,10 +33,10 @@ EOF
     i=$((i + 1))
 done
 
-nomad agent -config server1.hcl >/tmp/server1.log 2>&1 &
+$nomad agent -config server1.hcl >/tmp/server1.log 2>&1 &
 for c in client*; do
-    nomad agent -config $c >/tmp/${c%.hcl}.log 2>&1 &
+    $nomad agent -config $c >/tmp/${c%.hcl}.log 2>&1 &
 done
 
 sleep 6
-nomad job run job.hcl
+$nomad job run job.hcl

@@ -1,5 +1,6 @@
 job "plug" {
   datacenters = ["dc1"]
+  type = "system"
 
   group "csi" {
     task "plugin" {

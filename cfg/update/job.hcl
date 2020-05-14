@@ -9,18 +9,30 @@ job "job.hcl" {
     value = "2"
   }
 
-  # update {
-  #   max_parallel = 6
-  # }
+  update {
+    max_parallel = 2
+    # progress_deadline = "0s"
+  }
+
+  group "foo" {
+    task "bar" {
+      driver = "raw_exec"
+      config {
+	command = "sleep"
+	args = ["3600"]
+      }
+    }
+  }
+
 
   group "cache" {
-    count = 6
+    count = 4
 
     task "redis1" {
       driver = "raw_exec"
       config {
 	command = "sleep"
-	args = ["3600"]
+	args = ["3601"]
       }
     }
 
@@ -28,7 +40,7 @@ job "job.hcl" {
       driver = "raw_exec"
       config {
 	command = "sleep"
-	args = ["3600"]
+	args = ["3601"]
       }
     }
   }
