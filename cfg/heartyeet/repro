@@ -11,5 +11,5 @@ line=`sudo lsof -i TCP:4647 |grep "nomad *$pid "`;
 ports=`echo "$line"|grep -oP '(?<=:)\d+(?=->)'`
 
 echo "$ports"|while read port; do
-    echo sudo iptables -A INPUT -p tcp --sport "$port" -j DROP
+    sudo iptables -A INPUT -p tcp --sport "$port" -j DROP
 done
