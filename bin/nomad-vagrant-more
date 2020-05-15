@@ -15,21 +15,20 @@ sudo chsh -s /bin/zsh vagrant
 echo 'export HOME=/ssh:linux:/home/vagrant' >> ~/.zshenv
 echo 'export GOPATH=/home/vagrant/go' >> ~/.zshenv
 
-wget https://dl.google.com/go/go1.14.linux-amd64.tar.gz
+wget -q https://dl.google.com/go/go1.14.3.linux-amd64.tar.gz
 sudo rm -r /usr/local/go
-sudo tar -C /usr/local -xzf go1.14.linux-amd64.tar.gz
+sudo tar -C /usr/local -xzf go1.14.3.linux-amd64.tar.gz
 
-wget https://releases.hashicorp.com/terraform/0.12.24/terraform_0.12.24_linux_amd64.zip
-unzip terraform_0.12.24_linux_amd64.zip
+wget -q https://releases.hashicorp.com/terraform/0.12.25/terraform_0.12.25_linux_amd64.zip
+unzip terraform_0.12.25_linux_amd64.zip
 mv terraform bin
-rm terraform_0.12.24_linux_amd64.zip
+rm terraform_0.12.25_linux_amd64.zip
 
 # wget https://nodejs.org/dist/v12.16.1/node-v12.16.1-linux-x64.tar.xz
 # tar xJf node-v12.16.1-linux-x64.tar.xz
 # (cd bin && ln -sfn ../node-v12.16.1-linux-x64/bin/* .)
 
-unset GO111MODULE
-go get golang.org/x/tools/gopls@latest
+GO111MODULE=on go get golang.org/x/tools/gopls@latest
 go get gotest.tools/gotestsum
 EOF
 
