@@ -1,15 +1,15 @@
 #!/bin/sh
 set -e
 dir=/tmp/nomad-heartyeet
-nomad="$GOPATH"/bin/nomad
+nomad=${nomad:-`which nomad`}
 
 set -x
 
-for a in server1 client1 client2 client3; do
+for a in server1 client1 client2; do
     mkdir -p $dir/$a
     sudo $nomad agent -config $a.hcl > $dir/$a/log 2>&1 &
     echo $! > $dir/$a/pid
 done
 
 sleep 1
-nomad run yeet.hcl
+$nomad run yeet.hcl

@@ -1,30 +1,27 @@
 job "yeet" {
   datacenters = ["dc1"]
 
-  group "cache" {
-    stop_after_client_disconnect = "20s"
+  group "group" {
+    stop_after_client_disconnect = "5s"
+    count                        = 2
 
-    count = 2
+    constraint {
+      operator = "distinct_hosts"
+      value    = "true"
+    }
 
-    task "redis" {
-      driver = "docker"
+    task "task" {
+      driver = "raw_exec"
+      kill_timeout = "1s"
 
       config {
-        image = "redis:3.2"
-
-        port_map {
-          db = 6379
-        }
+	command = "sleep"
+	args    = ["3600"]
       }
 
       resources {
-        cpu    = 500
-        memory = 256
-
-        network {
-          mbits = 10
-          port  "db"  {}
-        }
+        cpu    = 20
+	memory = 20
       }
     }
   }
