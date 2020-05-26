@@ -7,13 +7,15 @@ sudo ln -sfn . /ssh:linux:
 mkdir -p go/src/github.com code
 
 mkdir -p bin
-touch bin/lsp-gopls
-chmod +x bin/lsp-gopls
+touch bin/lsp-gopls && chomd +x lsp-gopls
+touch bin/reset-ntp && chomd +x reset-ntp
 
 yes | sudo apt-get install zsh
 sudo chsh -s /bin/zsh vagrant
 echo 'export HOME=/ssh:linux:/home/vagrant' >> ~/.zshenv
 echo 'export GOPATH=/home/vagrant/go' >> ~/.zshenv
+
+yes | sudo apt-get install ntp ntpdate
 
 wget -q https://dl.google.com/go/go1.14.3.linux-amd64.tar.gz
 sudo rm -r /usr/local/go
@@ -37,6 +39,11 @@ cat <<EOF | ssh -T linux 'cat >bin/lsp-gopls'
 export GOROOT=/usr/local/go
 export GOPATH=/home/vagrant/go
 exec \$GOPATH/bin/gopls
+EOF
+
+cat <<EOF | ssh -T linux 'cat >bin/reset-ntp'
+#!/bin/sh
+sudo service ntp stop && sudo ntpdate -s time.nist.gov && sudo service ntp start
 EOF
 
 rsync="/usr/local/bin/rsync -a --delete"
