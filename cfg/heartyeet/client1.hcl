@@ -12,6 +12,12 @@ enable_debug = true
 
 datacenter = "dc1"
 
+# advertise {
+#   http = "127.0.0.2"
+#   rpc = "127.0.0.2"
+#   serf = "127.0.0.2"
+# }
+
 # Enable the client
 client {
   enabled = true

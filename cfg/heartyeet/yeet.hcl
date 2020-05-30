@@ -2,8 +2,8 @@ job "yeet" {
   datacenters = ["dc1"]
 
   group "group" {
-    stop_after_client_disconnect = "5s"
-    count                        = 2
+    stop_after_client_disconnect = "30s"
+    count                        = 1
 
     constraint {
       operator = "distinct_hosts"
@@ -11,11 +11,11 @@ job "yeet" {
     }
 
     task "task" {
-      driver = "raw_exec"
+      driver = "exec"
       kill_timeout = "1s"
 
       config {
-	command = "sleep"
+	command = "/bin/sleep"
 	args    = ["3600"]
       }
 

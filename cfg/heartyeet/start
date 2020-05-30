@@ -1,11 +1,14 @@
 #!/bin/sh
-set -e
+set -x
 dir=/tmp/nomad-heartyeet
 nomad=${nomad:-`which nomad`}
+export NOMAD_ADDR=http://127.0.0.1:4646
 
-set -x
+for a in server1 client1; do
+    if pgrep -F "$dir/$a/pid" >/dev/null 2>&1; then
+	continue
+    fi
 
-for a in server1 client1 client2; do
     mkdir -p $dir/$a
     sudo $nomad agent -config $a.hcl > $dir/$a/log 2>&1 &
     echo $! > $dir/$a/pid
@@ -13,3 +16,17 @@ done
 
 sleep 1
 $nomad run yeet.hcl
+
+while [ `$nomad job status yeet|sed '0,/Allocations/d'|grep -c 'running'` = 0 ]; do
+    sleep 1
+done
+
+./repro
+
+while ! pgrep -f 'sleep.3600' >/dev/null; do
+    sleep 1
+done
+
+$nomad job stop -purge yeet
+sleep 3
+$nomad job run yeet.hcl

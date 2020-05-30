@@ -9,4 +9,8 @@ if [ -n "$ppid" ]; then
     sudo mv $dir $dir-`uuidgen`
 fi
 
-sudo iptables -F INPUT
+./depro
+sleep 2
+
+sudo pkill nomad
+sudo pkill sleep
