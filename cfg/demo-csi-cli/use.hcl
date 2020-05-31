@@ -4,7 +4,7 @@ job "use" {
   group "cache" {
     volume "test" {
       type   = "csi"
-      source = "foo"
+      source = "ebs_prod_db1"
       mount_options {
 	fs_type = "ext4"
 	mount_flags = []
@@ -24,7 +24,7 @@ job "use" {
 
       volume_mount {
         volume      = "test"
-        destination = "/test"
+        destination = "${NOMAD_TASK_DIR}/vol"
       }
 
       resources {
