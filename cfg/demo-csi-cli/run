@@ -1,18 +1,62 @@
 #!/bin/sh
-set -e
+set -ex
+
 dir=/tmp/nomad-csi
 nomad="$GOPATH"/bin/nomad
+sock="$dir/client1/client/csi/monolith/plug/csi.sock"
 
 which csc >/dev/null || \
     GO111MODULE=off go get -u github.com/rexray/gocsi/csc
 
-for a in server1 client1; do
-    mkdir -p $dir/$a
-    sudo $nomad agent -config $a.hcl > $dir/$a/log 2>&1 &
-    echo $! > $dir/$a/pid
-done
+case "$1" in
+    a) $0 0 && $0 plug && $0 vol ;;
 
-sleep 15
+    b) $0 plug && $0 vol ;;
 
-$nomad run plug.hcl || true
-sleep 10
+    0)
+	for a in server1 client1; do
+	    if pgrep -F "$dir/$a/pid" >/dev/null 2>&1; then
+		continue
+	    fi
+
+	    mkdir -p $dir/$a
+	    sudo $nomad agent -config $a.hcl > $dir/$a/log 2>&1 &
+	    echo $! > $dir/$a/pid
+	done
+
+	until nomad node status|grep -q ready; do
+	    sleep 1
+	done
+	;;
+
+    plug)
+	$nomad run plug.hcl || true
+
+	until nomad plugin status|grep -q csi-hostpath; do
+	    sleep 1
+	done
+	;;
+
+    vol)
+	vid=`sudo csc --endpoint $sock controller create-volume test-volume --cap 1,2,ext4|awk '{print $1}'|sed 's/"//g'`
+
+	sed "s/<VOLUME_ID>/$vid/g" vol.hcl > v.hcl
+	sed "s/<VOLUME_ID>/$vid/g" use.hcl > u.hcl
+
+	sleep 2
+
+	$nomad volume register v.hcl || true
+	$nomad run u.hcl
+	;;
+
+    t)
+	ppid=`cat /tmp/nomad-csi/server1/pid 2>/dev/null`
+	if [ -n "$ppid" ]; then
+	    gpid=`ps o pgid "$ppid"|tail -n1|awk '{print $1}'`
+	    sudo kill -TERM "-$gpid"
+	    sudo mv /tmp/nomad-csi /tmp/nomad-csi-`uuidgen`
+	fi
+	sleep 1
+	pgrep nomad
+	;;
+esac
