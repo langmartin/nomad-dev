@@ -22,10 +22,13 @@ while [ `$nomad job status yeet|sed '0,/Allocations/d'|grep -c 'running'` = 0 ];
 done
 
 ./repro
+date
 
-while ! pgrep -f 'sleep.3600' >/dev/null; do
+sleep 28
+while pgrep -f 'sleep.3600' >/dev/null; do
     sleep 1
 done
+date
 
 $nomad job stop -purge yeet
 sleep 3
