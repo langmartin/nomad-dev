@@ -15,11 +15,13 @@ job "use" {
       driver = "docker"
 
       config {
-        image = "redis:3.2"
+        image = "busybox:1"
+	command = "/bin/sh"
+        args    = ["-c", "touch /local/vol/${NOMAD_ALLOC_ID}; sleep 3600"]
 
-        port_map {
-          db = 6379
-        }
+        # port_map {
+        #   db = 6379
+        # }
       }
 
       volume_mount {

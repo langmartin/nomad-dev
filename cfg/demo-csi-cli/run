@@ -39,14 +39,14 @@ case "$1" in
 
     vol)
 	vid=`sudo csc --endpoint $sock controller create-volume test-volume --cap 1,2,ext4|awk '{print $1}'|sed 's/"//g'`
-
 	sed "s/<VOLUME_ID>/$vid/g" vol.hcl > v.hcl
-	sed "s/<VOLUME_ID>/$vid/g" use.hcl > u.hcl
-
 	sleep 2
-
 	$nomad volume register v.hcl || true
-	$nomad run u.hcl
+	$0 use
+	;;
+
+    use )
+	$nomad run use.hcl
 	;;
 
     t)
@@ -59,4 +59,9 @@ case "$1" in
 	sleep 1
 	pgrep nomad
 	;;
+
+    e)
+	alloc=`$nomad job status use|sed '0,/Allocations/d'|grep running|cut -f1 -d' '`
+	echo export nomad=$nomad
+	echo export alloc=$alloc
 esac
