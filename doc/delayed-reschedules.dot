@@ -1,0 +1,72 @@
+digraph {
+	compound=true
+
+	// ========================================
+        // red, control flow
+        node[color="#ad2946" shape="rectangle" style="filled" fontcolor="white"]
+        edge[color="#ad2946" fontcolor="#ad2946"]
+	worker -> dequeueEvaluation
+	worker -> invokeScheduler
+	invokeScheduler -> process
+
+	process -> computeJobAllocs -> "reconciler.Compute" -> computeGroup
+	computeGroup -> computeStop -> markStop
+	computeGroup -> handleDelayedLost
+	computeGroup -> handleDelayedReschedules
+
+	process -> CreateEval -> "RPC Eval.Create"
+	"RPC Eval.Create" -> raft -> handleUpsertedEval -> "evalbroker.processEnqueue" -> "delayHeap.Push"
+	runDelayedEvalsWatcher -> enqueueLocked -> dequeueEvaluation
+
+
+	process -> SubmitPlan -> applyPlan -> evaluateNodePlan
+	applyPlan -> raft -> UpsertPlanResults -> upsertAllocsImpl
+
+	// evaluateNodePlan[label="evaluateNodePlan\nif NodeUpdate && !NodeAllocation\l then lost\l else error"]
+	subgraph cluster2 {
+		node[color="#5b4d8b" shape="oval"]
+		edge[color="#5b4d8b" fontcolor="#5b4d8b"]
+		if[label="if NodeUpdate && !NodeAllocation"]
+		if -> lost[label=t]
+		if -> error[label=f]
+	}
+
+	evaluateNodePlan -> if[lhead=cluster2]
+
+	// ========================================
+        // green, data flow
+        edge[color="#47841e"]
+        node[style="filled" color="#47841e" shape="diamond" fontcolor="white"]
+	dequeueEvaluation -> eval
+	eval -> worker
+	eval -> invokeScheduler
+	invokeScheduler -> scheduler
+	scheduler -> process
+
+	// the trick here is that these have to be named cluster*
+	subgraph cluster0 {
+		label="result"
+		stop
+		desiredFollowupEvals
+		attributeUpdates
+	}
+
+	markStop -> stop
+	handleDelayedLost -> desiredFollowupEvals
+	handleDelayedReschedules -> desiredFollowupEvals
+	handleDelayedReschedules -> attributeUpdates
+	desiredFollowupEvals -> CreateEval
+	attributeUpdates -> process[ltail=cluster0]
+
+	subgraph cluster1 {
+		label="plan"
+		NodeUpdate
+		NodeAllocation
+	}
+
+	stop -> NodeUpdate
+	attributeUpdates -> NodeAllocation
+	NodeUpdate -> process[ltail=cluster1]
+	NodeUpdate -> evaluateNodePlan[ltail=cluster1]
+	NodeUpdate -> upsertAllocsImpl
+}
