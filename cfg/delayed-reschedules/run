@@ -38,12 +38,12 @@ case "$1" in
     t)
 	set -x
 	for a in server1 client1; do
-	    sudo pkill -F $dir/$a
+	    sudo pkill -F $dir/$a/pid
 	done
 	sudo mv $dir $dir-`uuidgen`
 	sleep 1
-	sudo pkill nomad
-	sudo pkill sleep
+	sudo pkill nomad || true
+	sudo pkill sleep || true
 	;;
 
     e)
