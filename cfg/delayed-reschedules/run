@@ -1,0 +1,53 @@
+#!/bin/sh
+set -e
+
+dir=/tmp/nomad-delayed-reschedules
+nomad="$GOPATH"/bin/nomad
+
+case "$1" in
+    a) $0 0 && $0 j ;;
+
+    0)
+	set -x
+	for a in server1 client1; do
+	    if pgrep -F "$dir/$a/pid" >/dev/null 2>&1; then
+		continue
+	    fi
+
+	    mkdir -p $dir/$a
+	    sudo $nomad agent -config $a.hcl > $dir/$a/log 2>&1 &
+	    echo $! > $dir/$a/pid
+	done
+
+	until nomad node status|grep -q ready; do
+	    set +x
+	    sleep 1
+	done
+	;;
+
+    j)
+	set -x
+	$nomad run j.hcl || true
+
+	until nomad job status j|sed '0,/Allocations/d'|grep -q running; do
+	    set +x
+	    sleep 1
+	done
+	;;
+
+    t)
+	set -x
+	for a in server1 client1; do
+	    sudo pkill -F $dir/$a
+	done
+	sudo mv $dir $dir-`uuidgen`
+	sleep 1
+	sudo pkill nomad
+	sudo pkill sleep
+	;;
+
+    e)
+	alloc=`$nomad job status use|sed '0,/Allocations/d'|grep running|cut -f1 -d' '`
+	echo export nomad=$nomad
+	echo export alloc=$alloc
+esac
