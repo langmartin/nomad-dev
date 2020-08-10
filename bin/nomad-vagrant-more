@@ -52,7 +52,7 @@ for src in hashicorp langmartin; do
 	$rsync ~/go/src/github.com/$src/ linux:go/src/github.com/$src/
 done
 
-for src in dot-file nomad-dev; do
+for src in dot-file nomad-dev team-nomad; do
 	$rsync ~/code/$src/ linux:code/$src/
 done
 
