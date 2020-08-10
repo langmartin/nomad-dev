@@ -1,0 +1,9 @@
+#!/bin/sh
+set -e
+cd ~/go/src/github.com/hashicorp/nomad
+
+pfix=vendor/github.com/hashicorp/nomad/api
+
+git ls-files -m $pfix | while read name; do
+    cp "$name" "api${name#$pfix}"
+done
