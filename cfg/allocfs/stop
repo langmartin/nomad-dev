@@ -1,0 +1,15 @@
+#!/bin/sh
+set -x
+dir=/tmp/nomad-allocfs
+ppid=`cat $dir/server1/pid`
+
+if [ -n "$ppid" ]; then
+    gpid=`ps -o %pgid "$ppid"|tail -n1|awk '{print $1}'`
+    sudo kill -TERM "-$gpid"
+    sudo mv $dir $dir-`uuidgen`
+fi
+
+sleep 2
+
+sudo pkill nomad
+sudo pkill sleep
