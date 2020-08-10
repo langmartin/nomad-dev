@@ -3,14 +3,14 @@ job "memory" {
   group "echo" {
     count = 1
     task "server" {
-      driver = "docker"
+      driver = "podman"
       config {
 	image = "hashicorp/http-echo:latest"
 	args = [
 	  "-listen", ":8080",
 	  "-text", "Hello and welcome to ${NOMAD_IP_http} running on port 8080",
 	]
-	memory_hard_limit = 200
+	# memory_hard_limit = 200
       }
 
       resources {

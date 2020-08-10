@@ -15,6 +15,7 @@ ports {
   http = 7646
 }
 
-plugin "docker" {
+plugin_dir = "/home/ec2-user/plugins"
+plugin "podman" {
   enabled = true
 }

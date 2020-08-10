@@ -1,18 +1,26 @@
 job "logmon" {
   datacenters = ["dc1"]
 
-  reschedule {
-    attempts = 3
-    interval = "10m"
-    unlimited = false
-  }
+  group "cache" {
+    task "redis" {
+      driver = "podman"
 
-  group "g" {
-    task "t" {
-      driver = "exec"
       config {
-	command = "/bin/sleep"
-	args    = ["4"]
+        image = "docker://redis:3.2"
+
+        port_map {
+          db = 6379
+        }
+      }
+
+      resources {
+        cpu    = 500
+        memory = 256
+
+        network {
+          mbits = 10
+          port  "db"  {}
+        }
       }
     }
   }
