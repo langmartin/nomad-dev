@@ -1,0 +1,48 @@
+#!/bin/sh
+# sudo yum install -y yum-utils
+# sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+# sudo yum install -y --nobest docker-ce docker-ce-cli containerd.io
+# sudo systemctl enable docker.service
+# sudo systemctl start docker.service
+
+sudo yum install -y podman libvarlink-util
+sudo groupadd podman
+
+cat <<EOF > ~/podman.conf
+d /run/podman 0750 root podman
+EOF
+
+sudo chown root:root ~/podman.conf
+sudo mv ~/podman.conf /etc/tmpfiles.d
+
+cat <<EOF > ~/sock
+[Unit]
+Description=Podman Remote API Socket
+Documentation=man:podman-varlink(1)
+
+[Socket]
+ListenStream=/run/podman/io.podman
+SocketMode=0660
+SocketGroup=podman
+
+[Install]
+WantedBy=sockets.target
+EOF
+sudo chown root:root ~/sock
+sudo mv ~/sock /etc/systemd/system/io.podman.socket
+sudo systemctl daemon-reload
+sudo systemd-tmpfiles --create
+sudo systemctl enable --now io.podman.socket
+
+sudo yum install -y unzip
+curl https://releases.hashicorp.com/nomad/0.11.3/nomad_0.11.3_linux_amd64.zip > nomad-0113.zip
+mkdir bin
+unzip nomad-0113.zip
+mv nomad bin/nomad-0113
+
+sudo yum install -y wget
+wget 'https://github.com/hashicorp/nomad-driver-podman/releases/download/v0.0.3/nomad-driver-podman_linux_amd64.tar.gz'
+tar xzf nomad-driver-podman_linux_amd64.tar.gz
+mv nomad-driver-podman plugins
+mv plugins/nomad-driver-podman plugins/podman
+chmod +x plugins/podman
