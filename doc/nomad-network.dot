@@ -1,0 +1,64 @@
+digraph {
+	compound=true
+
+	// ========================================
+        // blue, data flow
+
+        edge[color="#5B4D8B" fontcolor="#5B4D8B" fontname="helvetica"]
+        node[color="#5B4D8B" style="filled" shape="ellipse" fontcolor="white" fontname="helvetica"]
+
+	// the trick here is that these have to be named cluster*
+	subgraph cluster0 {
+		label="config.Ports"
+		fontname="helvetica"
+		color="#5B4D8B"
+		http
+		rpc
+		serf
+	}
+
+	Server
+
+	// the trick here is that these have to be named cluster*
+	subgraph cluster1 {
+		label="serf Tags"
+		rcp_addr
+		port
+	}
+
+	// ========================================
+        // yellow, control flow
+
+	node[color="#E78F28" shape="rectangle"]
+        edge[color="#E78F28" fontcolor="#E78F28"]
+
+	ParseConfig -> http[lhead=cluster0]
+	http -> NewServer[ltail=cluster0]
+
+	NewServer -> Server
+	Server -> setupRPC
+	Server -> setupRaft
+	Server -> setupSerf
+
+	NewHTTPServer
+
+	// ========================================
+        // blue, data flow
+
+        node[style="filled" color="#5B4D8B" shape="ellipse" fontcolor="white"]
+        edge[color="#5B4D8B" fontcolor="#5B4D8B"]
+
+	advertise -> clientRpcAdvertise
+	advertise -> serverRpcAdvertise
+	rpc -> clientRpcAdvertise
+	rpc -> serverRpcAdvertise
+	clientRpcAdvertise -> rcp_addr
+	serverRpcAdvertise -> port
+
+	http -> NewHTTPServer
+	rpc -> setupRPC
+	rpc -> setupRaft
+
+	rpc -> setupSerf
+	serf -> MakeSerf
+}
