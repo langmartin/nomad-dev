@@ -3,8 +3,8 @@ set -ex
 
 dir=/tmp/nomad-csi
 nomad="$GOPATH"/bin/nomad
+# nomad=~/bin/nomad-0123
 sock="$dir/client1/client/csi/monolith/plug/csi.sock"
-
 which csc >/dev/null || \
     GO111MODULE=off go get -u github.com/rexray/gocsi/csc
 
@@ -53,7 +53,7 @@ case "$1" in
 	ppid=`cat /tmp/nomad-csi/server1/pid 2>/dev/null`
 	if [ -n "$ppid" ]; then
 	    gpid=`ps o pgid "$ppid"|tail -n1|awk '{print $1}'`
-	    sudo kill -TERM "-$gpid"
+	    sudo kill -TERM "-$gpid" || true
 	    sudo mv /tmp/nomad-csi /tmp/nomad-csi-`uuidgen`
 	fi
 	sleep 1

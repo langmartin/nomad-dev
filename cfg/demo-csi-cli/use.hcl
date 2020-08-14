@@ -4,7 +4,7 @@ job "use" {
   group "cache" {
     volume "test" {
       type   = "csi"
-      source = "ebs_prod_db1"
+      source = "test"
       mount_options {
 	fs_type = "ext4"
 	mount_flags = []
